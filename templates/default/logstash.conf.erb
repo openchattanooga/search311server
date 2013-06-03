@@ -1,0 +1,20 @@
+input {
+  tcp {
+    port => <%= node.logstash.tcp_port %>
+    type => "logstash"
+  }
+  <%= LogstashConf.section_to_str(node.logstash.inputs) %>
+}
+
+<% unless node.logstash.filters.empty? -%>
+filter {
+  <%= LogstashConf.section_to_str(node.logstash.filters, node.logstash.version, @patterns_dir) %>
+}
+<% end -%>
+
+output {
+  <% if node.logstash.debug -%>
+    stdout { debug => true debug_format => "json" }
+  <% end -%>
+  <%= LogstashConf.section_to_str(node.logstash.outputs) %>
+}
